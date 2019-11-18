@@ -29,12 +29,23 @@ object Cancel extends App with LazyLogging {
 
 //      logger.info(s"woohoo $invoice")
 
-      val cancelInvoiceResponse = ZuoraClient.cancelInvoice(invoice)
-      if (cancelInvoiceResponse.Success) {
-        successfullyCancelledCount = successfullyCancelledCount + 1
-        logger.info(s"$successfullyCancelledCount - ${invoice.`Invoice.InvoiceNumber`} successfully cancelled")
-      } else {
-        Abort(s"Failed to cancel invoice $invoice. Fix and resume from ${invoice.`Invoice.InvoiceNumber`}: $cancelInvoiceResponse")
+      try {
+        val cancelInvoiceResponse = ZuoraClient.cancelInvoice(invoice)
+        if (cancelInvoiceResponse.Success) {
+          successfullyCancelledCount = successfullyCancelledCount + 1
+          logger.info(s"$successfullyCancelledCount - ${invoice.`Invoice.InvoiceNumber`} successfully cancelled")
+        } else {
+          logger.error(
+            s"Failed to cancel invoice $invoice. Fix and resume from ${invoice.`Invoice.InvoiceNumber`}: " +
+            s"$cancelInvoiceResponse"
+          )
+        }
+      } catch {
+        case e: Throwable =>
+          logger.error(
+            s"Failed to cancel invoice $invoice. Fix and resume from ${invoice.`Invoice.InvoiceNumber`}",
+            e
+          )
       }
   }
 
