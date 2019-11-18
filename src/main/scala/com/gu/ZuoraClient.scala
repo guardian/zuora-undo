@@ -52,6 +52,33 @@ object ZuoraClient extends ZuoraJsonFormats with LazyLogging {
       case _ => throw new RuntimeException(s"Failed to cancel invoice $invoice due to Zuora networking issue: $response")
     }
   }
+
+  case class DeleteInvoice(Status: String)
+  case class ZuoraError(Code: String, Message: String)
+  case class DeleteInvoiceResponse(success: Boolean, id: String)
+  case class DeleteInvoiceErrorResponse(success: Boolean, id: String, errors: List[ZuoraError])
+
+  // https://www.zuora.com/developer/api-reference/#operation/Object_DELETEInvoice
+  def deleteInvoice(invoice: Invoice): DeleteInvoiceResponse = {
+    val response = HttpWithLongTimeout(s"$host/v1/object/invoice/${invoice.`Invoice.Id`}")
+      .header("Authorization", s"Bearer $accessToken")
+      .method("DELETE")
+      .asString
+
+    response.code match {
+      case 200 => parse(response.body).extract[DeleteInvoiceResponse]
+      case 400 =>
+        val body = parse(response.body).extract[DeleteInvoiceErrorResponse]
+        if (body.errors.length == 1 && body.errors.head.Code == "CANNOT_DELETE" && body.errors.head.Message == "invalid id")
+          // already deleted
+          DeleteInvoiceResponse(true, body.id)
+        else
+          throw new RuntimeException(
+            s"Failed to delete invoice $invoice due to Zuora networking issue: $response"
+          )
+      case _ => throw new RuntimeException(s"Failed to delete invoice $invoice due to Zuora networking issue: $response")
+    }
+  }
 }
 
 case class Token(
