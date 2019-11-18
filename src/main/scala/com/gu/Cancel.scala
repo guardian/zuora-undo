@@ -8,7 +8,7 @@ import scala.util.Try
  * Import file should be generated with:
  * "query" : "select Invoice.Id, Invoice.InvoiceNumber, Invoice.Status, Invoice.sourceId from invoiceitem where Invoice.sourceId = 'BR-00010739' and Invoice.Status = 'Draft' and servicestartdate >= '2019-11-16'",
  */
-object Main extends App with LazyLogging {
+object Cancel extends App with LazyLogging {
   if (args.length == 0)
     Abort("Please provide import filename")
   val filename = args(0)
