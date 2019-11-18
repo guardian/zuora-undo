@@ -27,12 +27,24 @@ object Delete extends App with LazyLogging {
       if (!(invoice.`Invoice.Status` == "Cancelled" && invoice.`Invoice.SourceId` == "BR-00010739"))
         Abort("Bad import file. Export with: select Invoice.Id, Invoice.InvoiceNumber, Invoice.Status, Invoice.sourceId from invoiceitem where Invoice.sourceId = 'BR-00010739' and Invoice.Status = 'Cancelled'")
 
-      val deleteInvoiceResponse = ZuoraClient.deleteInvoice(invoice)
-      if (deleteInvoiceResponse.success) {
-        successfullyDeletedCount = successfullyDeletedCount + 1
-        logger.info(s"$successfullyDeletedCount - ${invoice.`Invoice.InvoiceNumber`} successfully deleted")
-      } else {
-        Abort(s"Failed to delete invoice $invoice. Fix and resume from ${invoice.`Invoice.InvoiceNumber`}: $deleteInvoiceResponse")
+      try {
+        val deleteInvoiceResponse = ZuoraClient.deleteInvoice(invoice)
+        if (deleteInvoiceResponse.success) {
+          successfullyDeletedCount = successfullyDeletedCount + 1
+          logger.info(
+            s"$successfullyDeletedCount - ${invoice.`Invoice.InvoiceNumber`} successfully deleted"
+          )
+        } else {
+          logger.error(
+            s"Failed to delete invoice $invoice. Fix and resume from ${invoice.`Invoice.InvoiceNumber`}: $deleteInvoiceResponse"
+          )
+        }
+      } catch {
+        case e: Throwable =>
+          logger.error(
+            s"Failed to delete invoice $invoice. Fix and resume from ${invoice.`Invoice.InvoiceNumber`}",
+            e
+          )
       }
   }
 
