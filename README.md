@@ -73,8 +73,8 @@ r392306737383uejuedjklewljk,INV01111112,Draft,BR-00010739
 The 'Delete' app depends on a CSV in the following format
 
 ```
-2c92a06737383uejuedjklewljk,INV01111111,Cancelled,BR-00010739
-r392306737383uejuedjklewljk,INV01111112,Cancelled,BR-00010739
+2c92a06737383uejuedjklewljk,INV01111111,Canceled,BR-00010739
+r392306737383uejuedjklewljk,INV01111112,Canceled,BR-00010739
 ...
 ```
 
@@ -100,7 +100,7 @@ r392306737383uejuedjklewljk,INV01111112,Cancelled,BR-00010739
         "queries" : [
             {
                 "name" : "Mario-InvoiceItemAfter16Nov",
-                "query" : "select Invoice.Id, Invoice.InvoiceNumber, Invoice.Status, Invoice.sourceId from invoiceitem where Invoice.sourceId = 'BR-00010739' and Invoice.Status = 'Cancelled'",
+                "query" : "select Invoice.Id, Invoice.InvoiceNumber, Invoice.Status, Invoice.sourceId from invoiceitem where Invoice.sourceId = 'BR-00010739' and Invoice.Status = 'Canceled'",
                 "type" : "zoqlexport"
             }
         ]
