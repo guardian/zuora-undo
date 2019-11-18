@@ -24,7 +24,7 @@ object Delete extends App with LazyLogging {
       Abort(s"Bad import file: $importError")
 
     case Right(invoice) =>
-      if (!(invoice.`Invoice.Status` == "Cancelled" && invoice.`Invoice.SourceId` == "BR-00010739"))
+      if (!(invoice.`Invoice.Status` == "Canceled" && invoice.`Invoice.SourceId` == "BR-00010739"))
         Abort("Bad import file. Export with: select Invoice.Id, Invoice.InvoiceNumber, Invoice.Status, Invoice.sourceId from invoiceitem where Invoice.sourceId = 'BR-00010739' and Invoice.Status = 'Cancelled'")
 
       try {
